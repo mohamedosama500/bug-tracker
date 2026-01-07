@@ -8,10 +8,8 @@ pipeline {
 
                     image 'snakee/golang-junit:1.21'
                     reuseNode true
-                    // Added GOCACHE and HOME to the environment variables
-                    args '-v jenkins-docker-certs:/certs/client:ro ' +
-                        '--env GOCACHE=/tmp/.cache/go-build ' +
-                        '--env HOME=/tmp'
+                   // Add -u 0:0 to run as root
+                   args '-u 0:0 -v jenkins-docker-certs:/certs/client:ro'
                 }
 
             }
