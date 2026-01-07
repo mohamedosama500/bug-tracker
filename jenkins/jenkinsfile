@@ -5,13 +5,20 @@ pipeline {
         stage('Unit Tests - Backend') {
             agent {
                 docker {
-
                     image 'snakee/golang-junit:1.21'
                     reuseNode true
+                    // These arguments connect the agent to your dind container
+                    args '--env DOCKER_HOST=tcp://docker:2376 ' +
+                         '--env DOCKER_CERT_PATH=/certs/client ' +
+                         '--env DOCKER_TLS_VERIFY=1 ' +
+                         '-v jenkins-docker-certs:/certs/client:ro'
                 }
-
             }
             steps {
+                // Add a small wait to ensure the Docker daemon is actually up
+                script {
+                    sh 'inner_count=0; until docker version || [ $inner_count -eq 5 ]; do sleep 2; inner_count=$((inner_count+1)); done'
+                }
                 dir('bugtracker-backend'){
                     sh 'go test -v ./...'
                 }
