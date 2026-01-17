@@ -15,7 +15,8 @@ pipeline {
             }
             steps {
                 dir('bugtracker-backend'){
-                    sh 'go test -v ./...'
+                    sh 'go test -v ./... 2>&1 | go-junit-report > test-results.xml'
+                   
                 }
                 
             }
