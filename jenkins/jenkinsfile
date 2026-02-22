@@ -85,11 +85,12 @@ pipeline {
             }
 
         }
-        post {
+        
+    }
+    post {
             always{
 
-                cleanws()
+                cleanWs()
             }
         }
-    }
 }
