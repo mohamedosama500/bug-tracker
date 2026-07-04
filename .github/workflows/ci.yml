@@ -34,5 +34,37 @@ jobs:
         run:                                                                       
           go test -v ./...
 
+  unit-tests-frontend:
+    # it means i want to make backend to run first as they are runing sequential
+    needs: unit-tests-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up Node.jobs
+        # its a github action used to setup the node for us its made by someone else
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+           #after the branch is cloned it makes next runs much quicker
+          cache-dependency-path: bugtracker-frontend/package-lock.json
 
+
+
+      - name: Execute Frontend Unit Tests
+        working-directory: ./bugtracker-frontend
+        run:
+          npm ci
+          npm test
+
+      - name: Publish Frontend Test Results
+        # to use pre-built, community-made action called test-reporter created by the user dorny
+        uses: dorny/test-reporter@v1
+        # to make sure that the test runs even it fails
+        if: always()
+        with:
+         name: Frontend Unit Tests Report
+         path: bugtracker-frontend/test-results.xml
+         # Tells this action to expect a JUnit XML format, which is the specific structure jest-junit uses to log test results.
+         reporter: jest-junit
 
